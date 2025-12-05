@@ -1,13 +1,16 @@
-# You can change this base image to anything else
-# But make sure to use the correct version of Java
-FROM adoptopenjdk/openjdk11:alpine-jre
+# Use Maven with JDK 17 (Eclipse Temurin)
+FROM maven:3.9.6-eclipse-temurin-17
 
-# Simply the artifact path
-ARG artifact=target/spring-boot-web.jar
+# Switch to root for installing dependencies
+USER root
 
-WORKDIR /opt/app
+# Install Docker CLI inside the container (so Jenkins can run docker build, push)
+RUN apt-get update && \
+    apt-get install -y docker.io && \
+    apt-get clean
 
-COPY ${artifact} app.jar
+# Create working directory
+WORKDIR /workspace
 
-# This should not be changed
-ENTRYPOINT ["java","-jar","app.jar"]
+# Default command (optional)
+CMD ["bash"]
